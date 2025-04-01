@@ -48,6 +48,7 @@ I have developed an **AI-powered agent** trained on **50+ test cases** to play t
 2. **Game Duration**
    - The game runs for **60 seconds**, and the player must prevent zombies from crossing the lawn.
    - If a zombie breaches the lawn → **Game Over**.
+   - ![Game Screenshot](images/image4.png)
 3. **Legal Moves**
    - Weapons can **only** be placed on the **5×5 green lawn**.
 4. **Controls**
