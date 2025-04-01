@@ -6,7 +6,7 @@
 ### 🕒 Gameplay Mechanics
 - The game lasts **60 seconds**.
 - Every **20 seconds**, the number of incoming zombies increases.
-- Zombies will **attack** the placed elements.
+- Zombies will **attack** the placed elements and vise-versa.
 - For a detailed breakdown of the game mechanics, refer to `game.txt`.
 
 ![Game Screenshot](images/image2.png)
