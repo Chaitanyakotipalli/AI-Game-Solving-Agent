@@ -38,9 +38,8 @@ Game Rules:
 
 
   Installation :
-  git clone https://github.com/Chaitanyakotipalli/AI_Game_Solving_Agent.git
-  cd AI_Game_Solving_Agent
-
+  git clone (https://github.com/Chaitanyakotipalli/AI-Game-Solving-Agent)
+  cd AI_GAME_AGENT
   Install 
   pip install pygame
   run the game
