@@ -1,4 +1,4 @@
-# 🧠 AI-Solving Game: Defending-Zombie-Simulation
+# 🧠 AI-Solving Game: Defending Zombie Simulation
 
 ## 🎮 Game Introduction
 **Defending-Zombie-Simulation** is a **single-player** strategy game where the player must place different elements (**Sniper, Shotgun, Charizard, Samurai, Bomb**) to defend against incoming zombies, preventing them from crossing the lawn.
