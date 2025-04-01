@@ -1,75 +1,87 @@
-GMAE IDEA:
-        1.the main idea of the game is to defend the lanwn without allowing the zombies to breach it.
-        2.to  defend we will use some elements like(sniper,shotgun,samurai,charizard,bomb).
-        3.different types of zombies would approach towards the lawn.
-        4.we have to defend the lawn till the time duration generaly (60sec) we will won the game else if atleast one zombie breaches the lawn the game is over.
-        5.the score is displayed in the leftmost part which is the total no of zombie_kills till now.
-        
-GAME RULES:
-       1.the lawn is divided into a grid of 5*5 .
-       2.the zombies would approach towards the lawn in 5 different rows of the lawns.
-       3.the lements of the guns section should be placed in the grids only
-       4.every gun has different times of cooldown effect
-       5.every gun has different types of abilites ,speed,health.
-       6.different types of zombies have different tpyes of speed,health and attack speed.
+**GAME IDEA:**
+1. The main idea of the game is to defend the lawn without allowing the zombies to breach it.
+2. To defend, we will use some elements like sniper, shotgun, samurai, Charizard, and bombs.
+3. Different types of zombies will approach the lawn.
+4. We have to defend the lawn for a time duration (generally 60 seconds). If we survive, we win the game. If at least one zombie breaches the lawn, the game is over.
+5. The score is displayed in the leftmost part, representing the total number of zombie kills.
 
-GAME SETTINGS:
-      1.the game settings can be changed by modifying the settings in the gme_settings.py
-      2.It consists of all tpyes of display settings like screen width,background image,selection bar settings,fonts etc.
-      3.it also allows to choose between who to play the game agent or human.
-      4.we can change the speeds ,abilites,heath and cooldown effects of the zombies and guns
-      5.we can change the total duration and speed of zombies approching can increase difficulty level etc.
-      to check it go to game_settings.py
+**GAME RULES:**
+1. The lawn is divided into a 5x5 grid.
+2. Zombies will approach the lawn in 5 different rows.
+3. The elements (guns) should be placed only within the grid.
+4. Every gun has a different cooldown time.
+5. Every gun has different abilities, speed, and health.
+6. Different types of zombies have different speeds, health, and attack speeds.
 
-GAME ASSETS:
-      1.in this file it contains all the animations of the game
-      2.these file uses the gif_paths.py which contain all the addreses of the gifs used in the game
-      3.these is the main area for the releastic feel of the game.
-      4.we cann add more effects for the game here.
-      to check it go to assets.py
-GAME:
-    1.this file contains all the details how we handle all the assets settings effects logics etc.
-    2.i have defined 3 different types of class functions for guns,zombies ,bombs.
-    3.for every frame it checks the zombie's x,y positions if it cross lawn_x the game is over otherwise displays game over
-        ![Game Screenshot](images/image4.png)
-    4.the zombies approch lawn from different rows randomly 
-       # Code for this
-       # y_pos_array = [lawn_y + row_height * i for i in range(rows)]
-       # if not game_over and not win:
-       #    spawn_timer += dt
-       #     if spawn_timer >= spawn_delay:
-       #         spawn_timer = 0
-       #         for _ in range(spawn_multiplier):
-       #             zombie_type = random.choice(list(zombie_types.keys()))
-       #             zombie_y = random.choice(y_pos_array)
-       #             zombies.append(Zombie(screen_width, zombie_y, zombie_type))
-       # Update zombies
-       #     for z in zombies[:]:
-       #        z.update(dt, guns)
-       #        if z.x < lawn_x and not z.dead:
-       #           game_over = True
-       #          break
-       # 
-       # The Zombies approch with different animations 
-   5.the gun placement logic GUN AND BOMB CLASS
-        for every frame it checks for the gun availabilty to check their cooldown time and return the gun and the mouse allows us to place it in the lawn
-        #        def get_available_gun_type(preferred_type=None):
-        #           current_time = pygame.time.get_ticks()
-        #           if preferred_type:
-        #               info = gun_cooldown_info.get(preferred_type)
-        #               if info and current_time - info['last_placed'] >= info['cooldown']:
-        #                   return preferred_type
-        #           for gun in ['charizard', 'sniper', 'cowboy']:
-        #               info = gun_cooldown_info.get(gun)
-        #               if info and current_time - info['last_placed'] >= info['cooldown']:
-        #                   return gun
-        #           return None
+**GAME SETTINGS:**
+1. The game settings can be modified in `game_settings.py`.
+2. It consists of all types of display settings, including screen width, background image, selection bar settings, fonts, etc.
+3. The game can be played either by a human or an AI agent.
+4. It allows customization of zombie and gun properties like speed, abilities, health, and cooldown effects.
+5. Difficulty level can be adjusted by changing the total duration and zombie speed.
+   
+**GAME ASSETS:**
+1. This file contains all the animations of the game.
+2. It uses `gif_paths.py`, which contains all the addresses of the GIFs used in the game.
+3. This is the main area for enhancing the realistic feel of the game.
+4. Additional effects can be added here.
+   
+**GAME IMPLEMENTATION:**
+1. This file handles all assets, settings, effects, and logic.
+2. Three main class functions are defined for Guns, Zombies, and Bombs.
+3. Each frame checks the zombies' x, y positions. If any zombie crosses `lawn_x`, the game is over; otherwise, gameplay continues.
 
-                in main loop
-        #   for g in guns:
-        #       g.update(dt, zombies)
-        #    guns = [g for g in guns if g.alive]
-        #    for b in bombs:
-        #       b.update(zombies)
-        #   bombs = [b for b in bombs if b.alive]
-        #
+```python
+# Code snippet for zombie approach logic
+y_pos_array = [lawn_y + row_height * i for i in range(rows)]
+if not game_over and not win:
+    spawn_timer += dt
+    if spawn_timer >= spawn_delay:
+        spawn_timer = 0
+        for _ in range(spawn_multiplier):
+            zombie_type = random.choice(list(zombie_types.keys()))
+            zombie_y = random.choice(y_pos_array)
+            zombies.append(Zombie(screen_width, zombie_y, zombie_type))
+
+# Updating zombie positions
+for z in zombies[:]:
+    z.update(dt, guns)
+    if z.x < lawn_x and not z.dead:
+        game_over = True
+        break
+```
+
+4. The zombies approach with different animations.
+
+5. **Gun and Bomb Placement Logic:**
+   - Each frame checks for gun availability, verifies cooldown time, and allows mouse placement.
+
+```python
+# Function to get an available gun type
+def get_available_gun_type(preferred_type=None):
+    current_time = pygame.time.get_ticks()
+    if preferred_type:
+        info = gun_cooldown_info.get(preferred_type)
+        if info and current_time - info['last_placed'] >= info['cooldown']:
+            return preferred_type
+    for gun in ['charizard', 'sniper', 'cowboy']:
+        info = gun_cooldown_info.get(gun)
+        if info and current_time - info['last_placed'] >= info['cooldown']:
+            return gun
+    return None
+```
+
+6. **Main Loop for Gun and Bomb Updates:**
+
+```python
+for g in guns:
+    g.update(dt, zombies)
+guns = [g for g in guns if g.alive]
+
+for b in bombs:
+    b.update(zombies)
+bombs = [b for b in bombs if b.alive]
+```
+
+
+
