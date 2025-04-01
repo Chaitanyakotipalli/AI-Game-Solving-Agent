@@ -61,7 +61,7 @@ I have developed an **AI-powered agent** trained on **50+ test cases** to play t
 1. **Clone the repository**:
    ```sh
    git clone https://github.com/Chaitanyakotipalli/AI-Game-Solving-Agent
-   cd AI_GAME_AGENT
+   
    ```
 2. **Install dependencies**:
    ```sh
