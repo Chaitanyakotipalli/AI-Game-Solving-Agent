@@ -1,0 +1,33 @@
+GMAE IDEA:
+        1.the main idea of the game is to defend the lanwn without allowing the zombies to breach it.
+        2.to  defend we will use some elements like(sniper,shotgun,samurai,charizard,bomb).
+        3.different types of zombies would approach towards the lawn.
+        4.we have to defend the lawn till the time duration generaly (60sec) we will won the game else if atleast one zombie breaches the lawn the game is over.
+        5.the score is displayed in the leftmost part which is the total no of zombie_kills till now.
+        
+GAME RULES:
+       1.the lawn is divided into a grid of 5*5 .
+       2.the zombies would approach towards the lawn in 5 different rows of the lawns.
+       3.the lements of the guns section should be placed in the grids only
+       4.every gun has different times of cooldown effect
+       5.every gun has different types of abilites ,speed,health.
+       6.different types of zombies have different tpyes of speed,health and attack speed.
+
+GAME SETTINGS:
+      1.the game settings can be changed by modifying the settings in the gme_settings.py
+      2.It consists of all tpyes of display settings like screen width,background image,selection bar settings,fonts etc.
+      3.it also allows to choose between who to play the game agent or human.
+      4.we can change the speeds ,abilites,heath and cooldown effects of the zombies and guns
+      5.we can change the total duration and speed of zombies approching can increase difficulty level etc.
+      to check it go to game_settings.py
+
+GAME ASSETS:
+      1.in this file it contains all the animations of the game
+      2.these file uses the gif_paths.py which contain all the addreses of the gifs used in the game
+      3.these is the main area for the releastic feel of the game.
+      4.we cann add more effects for the game here.
+      to check it go to assets.py
+GAME:
+    1.this file contains all the details how we handle all the assets settings effects logics etc.
+    2.
+
