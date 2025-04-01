@@ -29,5 +29,47 @@ GAME ASSETS:
       to check it go to assets.py
 GAME:
     1.this file contains all the details how we handle all the assets settings effects logics etc.
-    2.
+    2.i have defined 3 different types of class functions for guns,zombies ,bombs.
+    3.for every frame it checks the zombie's x,y positions if it cross lawn_x the game is over otherwise displays game over
+        ![Game Screenshot](images/image4.png)
+    4.the zombies approch lawn from different rows randomly 
+       # Code for this
+       # y_pos_array = [lawn_y + row_height * i for i in range(rows)]
+       # if not game_over and not win:
+       #    spawn_timer += dt
+       #     if spawn_timer >= spawn_delay:
+       #         spawn_timer = 0
+       #         for _ in range(spawn_multiplier):
+       #             zombie_type = random.choice(list(zombie_types.keys()))
+       #             zombie_y = random.choice(y_pos_array)
+       #             zombies.append(Zombie(screen_width, zombie_y, zombie_type))
+       # Update zombies
+       #     for z in zombies[:]:
+       #        z.update(dt, guns)
+       #        if z.x < lawn_x and not z.dead:
+       #           game_over = True
+       #          break
+       # 
+       # The Zombies approch with different animations 
+   5.the gun placement logic GUN AND BOMB CLASS
+        for every frame it checks for the gun availabilty to check their cooldown time and return the gun and the mouse allows us to place it in the lawn
+        #        def get_available_gun_type(preferred_type=None):
+        #           current_time = pygame.time.get_ticks()
+        #           if preferred_type:
+        #               info = gun_cooldown_info.get(preferred_type)
+        #               if info and current_time - info['last_placed'] >= info['cooldown']:
+        #                   return preferred_type
+        #           for gun in ['charizard', 'sniper', 'cowboy']:
+        #               info = gun_cooldown_info.get(gun)
+        #               if info and current_time - info['last_placed'] >= info['cooldown']:
+        #                   return gun
+        #           return None
 
+                in main loop
+        #   for g in guns:
+        #       g.update(dt, zombies)
+        #    guns = [g for g in guns if g.alive]
+        #    for b in bombs:
+        #       b.update(zombies)
+        #   bombs = [b for b in bombs if b.alive]
+        #
