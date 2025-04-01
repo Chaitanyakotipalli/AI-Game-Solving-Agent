@@ -1,1 +1,188 @@
-AGENT PLAY
+AGENT PLAY:
+        1.This file contains all the detailes of the game solving agent i have created.
+        2.to acces the agent change the game_settings.py->agent_play=1.
+        3.This agent dynamicaly updates it heuristic values based on each frame to dynamical analysing the game situation.
+
+Idea:
+    1.To solve the game i have designed a model which is trained on 50+ testcases of the grid postions with different zombies to decide how to play the game.
+    2.I used differnt heuristic functions to solve this
+                  -> emergency_condition
+                  -> get_available_gun_type with priority gun type
+                  -> find_available_spots_in_row
+                  -> evaluate_threat
+                  -> check_leftmost_defense
+                  -> maintain_defense  # the above all the funtions are generally used for all types 
+                  -> compute_bomb_score
+                  -> attempt_bomb_placement # these are specialy for the bomb placement
+    3. 
+      -> emergency_condition:
+             1. this function trigers when the zombies are near to cross the lawn and when their is no defences in that row.
+             2. the first priority for this samurai as it has more speed and high attack power.
+             3.if samurai is in cooldown state this fallback to the next level of defense like charizard,sniper,shotgun.
+
+      -> get_available_gun_type with priority gun type:
+        '''
+              def get_available_gun_type(preferred_type=None):
+                current_time = pygame.time.get_ticks()
+                if preferred_type:
+                    info = gun_cooldown_info.get(preferred_type)
+                    if info and current_time - info['last_placed'] >= info['cooldown']:
+                        return preferred_type
+                for gun in ['charizard', 'sniper', 'cowboy']:
+                    info = gun_cooldown_info.get(gun)
+                    if info and current_time - info['last_placed'] >= info['cooldown']:
+                        return gun
+                return None
+        '''
+      -> find_available_spots_in_row:
+         '''
+              def find_available_spots_in_row(self, row, guns):
+                  occupied_columns = {(g.x - lawn_x) // col_width for g in guns if (g.y - lawn_y) // row_height == row}
+                  return [col for col in range(cols) if col not in occupied_columns]
+          '''
+      -> evaluate_threat and check_leftmost_defense:
+          '''
+              def evaluate_threat(self, row, zombies, current_gun_count):
+                  zombies_in_row = [z for z in zombies if 0 <= (z.y - lawn_y) // row_height == row]
+                  count = len(zombies_in_row)
+                  if count == 0:
+                      return 0
+                  closest_zombie_x = min(z.x for z in zombies_in_row)
+                  distance_factor = max(0, (lawn_x + lawn_width - closest_zombie_x) / lawn_width)
+                  alpha, beta, gamma = 1.0, 2.0, 1.0
+                  threat = alpha * count + beta * (1 - distance_factor) - gamma * current_gun_count
+                  return threat
+          
+              def check_leftmost_defense(self, row, guns):
+                  for g in guns:
+                      if (g.y - lawn_y) // row_height == row and (g.x - lawn_x) // col_width == 0:
+                          return False
+                  return True
+          '''
+
+      -> maintain_defense :
+        '''
+            def maintain_defense(self, zombies, guns, bombs):
+                guns[:] = [g for g in guns if getattr(g, "alive", True)]
+                current_time = pygame.time.get_ticks()
+                for row in range(rows):
+                    zombies_in_row = [z for z in zombies if 0 <= (z.y - lawn_y) // row_height == row]
+                    current_zombie_count = len(zombies_in_row)
+                    current_gun_count = len([g for g in guns if 0 <= (g.y - lawn_y) // row_height == row])
+                    if current_zombie_count == 0:
+                        continue
+                    closest_zombie_x = min(z.x for z in zombies_in_row)
+                    emergency_threshold = 2 * col_width
+                    left_defense_missing = self.check_leftmost_defense(row, guns)
+                    emergency_condition = ((closest_zombie_x - lawn_x) <= emergency_threshold or left_defense_missing) and (current_gun_count < current_zombie_count)
+                    attempt_bomb_placement(zombies, bombs, guns)
+                    if emergency_condition:
+                        gun_to_place = get_available_gun_type(preferred_type="samurai")
+                        if gun_to_place is None:
+                            gun_to_place = get_available_gun_type()
+                        if gun_to_place is not None:
+                            available_spots = self.find_available_spots_in_row(row, guns)
+                            if available_spots:
+                                col = available_spots[0]
+                                gun_x = lawn_x + col * col_width
+                                gun_y = lawn_y + row * row_height
+                                new_gun = Gun(gun_x, gun_y, gun_types[gun_to_place])
+                                guns.append(new_gun)
+                                gun_cooldown_info[gun_to_place]['last_placed'] = current_time
+                                print(f"Emergency: Placed {gun_to_place} at ({gun_x}, {gun_y}) in row {row}.")
+                        self.prev_zombie_counts[row] = current_zombie_count
+                        continue
+                    threat = self.evaluate_threat(row, zombies, current_gun_count)
+                    threat_threshold = 1.5
+                    if threat > threat_threshold and current_gun_count < current_zombie_count:
+                        available_spots = self.find_available_spots_in_row(row, guns)
+                        if available_spots:
+                            col = available_spots[0]
+                            gun_x = lawn_x + col * col_width
+                            gun_y = lawn_y + row * row_height
+                            selected_gun_type = get_available_gun_type()
+                            if selected_gun_type is not None:
+                                new_gun = Gun(gun_x, gun_y, gun_types[selected_gun_type])
+                                guns.append(new_gun)
+                                gun_cooldown_info[selected_gun_type]['last_placed'] = current_time
+                                print(f"Placed {selected_gun_type} at ({gun_x}, {gun_y}) in row {row} (Threat: {threat:.2f}).")
+                    self.prev_zombie_counts[row] = current_zombie_count
+        '''
+      -> compute_bomb_score and attempt_bomb_placement:
+        '''
+            def compute_bomb_score(row, zombies):
+                zombies_in_row = [z for z in zombies if 0 <= (z.y - lawn_y) // row_height == row]
+                if not zombies_in_row:
+                    return 0, None
+                Z = len(zombies_in_row)
+                immediate_positions = []
+                if Z >= 2:
+                    for i in range(len(zombies_in_row)):
+                        for j in range(i+1, len(zombies_in_row)):
+                            if abs(zombies_in_row[i].x - zombies_in_row[j].x) < 2 * col_width:
+                                immediate_positions.append(zombies_in_row[i].x)
+                                immediate_positions.append(zombies_in_row[j].x)
+                    if immediate_positions:
+                        min_x = min(immediate_positions)
+                        col_index = int((min_x - lawn_x) // col_width)
+                        bomb_col = max(col_index - 1, 0)
+                        return 1000, (row, bomb_col)
+                cell_center_x = lawn_x + col_width / 2
+                avg_distance = sum(z.x - cell_center_x for z in zombies_in_row) / Z
+                proximity = 1 - min(max(avg_distance / lawn_width, 0), 1)
+                current_time = pygame.time.get_ticks()
+                bomb_info = gun_cooldown_info.get('bomb', {'last_placed': 0, 'cooldown': 10000})
+                cd_penalty = 100 if current_time - bomb_info['last_placed'] < bomb_info['cooldown'] else 0
+                group_count = 0
+                for i in range(len(zombies_in_row)):
+                    for j in range(i+1, len(zombies_in_row)):
+                        if abs(zombies_in_row[i].x - zombies_in_row[j].x) < col_width:
+                            group_count += 1
+                alpha, gamma, delta = 10, 10, 20
+                score = alpha * Z + gamma * proximity + delta * group_count - cd_penalty
+                return score, (row, 0)
+            
+            def attempt_bomb_placement(zombies, bombs, guns):
+                current_time = pygame.time.get_ticks()
+                best_row = None
+                best_score = -float('inf')
+                best_pos = None
+                for row in range(rows):
+                    score, pos = compute_bomb_score(row, zombies)
+                    if score > best_score:
+                        best_score = score
+                        best_row = row
+                        best_pos = pos
+                threshold = 50
+                if best_row is not None and best_score >= threshold and best_pos is not None:
+                    row_index, col_index = best_pos
+                    empty_col = None
+                    for offset in range(cols):
+                        left_col = col_index - offset if col_index - offset >= 0 else None
+                        right_col = col_index + offset if col_index + offset < cols else None
+                        if left_col is not None:
+                            bomb_x = lawn_x + left_col * col_width
+                            bomb_y = lawn_y + row_index * row_height
+                            if not any((b.x == bomb_x and b.y == bomb_y) for b in bombs) and not any((g.x == bomb_x and g.y == bomb_y) for g in guns):
+                                empty_col = left_col
+                                break
+                        if right_col is not None:
+                            bomb_x = lawn_x + right_col * col_width
+                            bomb_y = lawn_y + row_index * row_height
+                            if not any((b.x == bomb_x and b.y == bomb_y) for b in bombs) and not any((g.x == bomb_x and g.y == bomb_y) for g in guns):
+                                empty_col = right_col
+                                break
+                    if empty_col is not None:
+                        bomb_x = lawn_x + empty_col * col_width
+                        bomb_y = lawn_y + row_index * row_height
+                        if current_time - gun_cooldown_info['bomb']['last_placed'] >= gun_cooldown_info['bomb']['cooldown']:
+                            bombs.append(Bomb(bomb_x, bomb_y))
+                            gun_cooldown_info['bomb']['last_placed'] = current_time
+                            print(f"Bomb placed in row {best_row} at col {empty_col} with score {best_score:.2f}.")
+                        else:
+                            print("Bomb is on cooldown; cannot place now.")
+                    else:
+                        print("No empty spot found in the row; cannot place bomb.")
+            '''
+All these functions are used to solve the maximising the wining probability.
+            
