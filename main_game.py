@@ -668,7 +668,7 @@ def main():
 
         elif game_over:
             # Handle game-over animation
-            screen.blit(background_image, (0, 0))
+
             game_over_text = FONT_GAMEOVER.render("GAME OVER", True, (255, 0, 0))
             game_over_text_rect = game_over_text.get_rect(center=(screen_width // 2, screen_height // 2))
             screen.blit(game_over_text, game_over_text_rect)
